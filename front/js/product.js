@@ -1,13 +1,13 @@
+
+var article = null;
+var articleId = null;
+
 //----------- main function -------------// 
 (async () => {
-  const articleId = getArticleId();
-  let article = await getArticle(articleId);
+  articleId = getArticleId();
+  article = await getArticle(articleId);
   fillArticle(article);
 })();
-
-//faut-il mettre cela dans la page panier?
-const commande = [];
-localStorage.setItem("commande", JSON.stringify(commande));
 
 //---- subfunction : first, get the article's id -----//
 function getArticleId() {
@@ -21,10 +21,7 @@ function getArticle(articleId) {
       return response.json();
     })
     .then(function (article) {
-      // console.log("article : " + article.name);
-      // console.log("article : " + article + " id : " + article._id)
-      // console.log(article)
-      // console.log(article._id)
+      console.log(article);
       return article;
     })
     .catch(function (error) {
@@ -41,7 +38,6 @@ function fillArticle(article) {
   document.getElementById("price").textContent = article.price + ",00 €";
   document.getElementById("description").textContent = article.description;
 
-  // Display all varnishes
   // step 1 : get the list, and each item of it
   article.colors.forEach((color)=>{
 
@@ -56,7 +52,7 @@ function fillArticle(article) {
     document.getElementById("colors").add(option);
   })
 
-
+  console.log(article);
   return article
 }
 
@@ -76,67 +72,52 @@ document.getElementById('addToCart').onclick =  (event)=> {
 //Pour ne pas réactualiser la page
   event.preventDefault();
 
-  // if pas choisi de couleur veuillez choisir une couleur
-  // if pas choisi de quantité veuillez indiquez une quantité
-
-  // else
-
-  // stockage des choix
+  //--------- stockage des choix -----//
   let colors = document.getElementById("colors");
   let choosenColor = colors.options[colors.selectedIndex].value;
   console.log("couleur choisie " + choosenColor);
-  let choosenQuantity = document.getElementById("quantity").value;
+  let choosenQuantity = parseInt(document.getElementById("quantity").value);
   console.log("quantité " + choosenQuantity);
-
-  //-----compilation des choix avec les infos de l'article
-  let KanapId = new URL(window.location.href).searchParams.get('id');
-  console.log(KanapId);
-  let Kanap = getArticle(KanapId);
-  Kanap = Promise.resolve(Kanap);
-  
-  Kanap.then((res) => {
-    console.log(res)
+ 
     let KanapOptions = {
-      image:res.imageUrl,
-      alt:res.altTxt,
-      name: res.name,
-      recup_Id: res._id,
+      image:article.imageUrl,
+      alt:article.altTxt,
+      name: article.name,
+      recup_Id: article._id,
       color: choosenColor,
       quantity: choosenQuantity,
-      price: res.price,
+      price: article.price,
     };
-    console.log(KanapOptions);
+    console.log("xxx" + KanapOptions);
 
-    //----------- pop up de confirmation pour plusieurs exemplaires -------------//
+    //----------- pop up de confirmation (ou pas) pour plusieurs exemplaires -------------//
     let messageConf = () => {
-    if(window.confirm(
-      `L'article ${res.name} option: ${choosenColor} est dans votre panier 
-      en ${choosenQuantity} exemplaires.
-      Veuillez appuyer sur OK pour voir le panier ou ANNULER 
-      pour retourner sur la page`)){
-    window.location.href = "cart.html";
-    }
-    else {
-    window.location.href = `product.html?id=${articleId}`;
-    }
-    }
-
-    //----------- pop up de confirmation pour 1 seul exemplaire -------------//
-
-    let messageConf1 = () => {
       if(window.confirm(
-        `L'article ${res.name} option: ${choosenColor} est dans votre panier 
-        en ${choosenQuantity} exemplaire.
+        `L'article ${article.name} option: ${choosenColor} va être ajouté à votre panier 
+        en ${choosenQuantity} exemplaires.
         Veuillez appuyer sur OK pour voir le panier ou ANNULER 
-        pour retourner sur la page`)){
-      window.location.href = "cart.html";
+        pour retourner à l'accueil`)){
+        confirmation ()
       }
       else {
-      window.location.href = `product.html?id=${articleId}`;
+      window.location.href = `index.html`;
       }
-    }
+      }
+    //----------- pop up de confirmation (ou pas) pour 1 seul exemplaire     -------------//
+    let messageConf1 = () => {
+      if(window.confirm(
+        `L'article ${article.name} option: ${choosenColor} va être ajouté à votre panier 
+        en ${choosenQuantity} exemplaire.
+        Veuillez appuyer sur OK pour voir le panier ou ANNULER 
+        pour retourner à l'accueil`)){
+        confirmation ()
+      }
+      else {
+        window.location.href = `index.html`;;
+      }
+      }
 
-    //----------- message alerte si pas couleur et/ou quantité -------------//
+    //----------- message alerte si pas couleur et/ou quantité      -------------//
     let messageColor = () => {
       window.confirm(`Veuillez choisir une couleur`);
       window.location.href = `product.html?id=${articleId}`;
@@ -149,33 +130,50 @@ document.getElementById('addToCart').onclick =  (event)=> {
       window.confirm(`Veuillez choisir une couleur et une quantité`);
       window.location.href = `product.html?id=${articleId}`;
     }
-    
-    //------------ procédure de confirmation (ou pas) ----------------//
 
-    if(commande && choosenQuantity == 0 && choosenColor == ""){
+    //-----fonction confirmation et envoi des choix au localStorage
+    
+    function confirmation () {
+      let commandeLS = JSON.parse(localStorage.getItem("commande"))
+      console.log(commandeLS)
+    
+      //------ things already in the localStorage ----------------//
+      if (commandeLS){
+        console.log("ok")
+        commandeLS.push(KanapOptions);
+        localStorage.setItem("commande", JSON.stringify(commandeLS));
+
+      //------ things not yet in the localStorage ----------------//
+      }else{
+        commandeLS = []
+        commandeLS.push(KanapOptions);
+        localStorage.setItem("commande", JSON.stringify(commandeLS));
+      }
+      console.log(commandeLS);
+      window.location.href = "cart.html";  
+    }
+
+
+    
+    //------------ procédure de confirmation (ou pas)           ----------------//
+
+    if(choosenQuantity == 0 && choosenColor == ""){
       messageCetQ ();
-    }else if(commande && choosenQuantity != 0 && choosenColor == ""){
+    }else if(choosenQuantity != 0 && choosenColor == ""){
       messageColor();
-    }else if(commande && choosenQuantity == 0 && choosenColor != ""){
+    }else if(choosenQuantity == 0 && choosenColor != ""){
       messageQuantity();
-    }else if(commande && choosenQuantity == 1 && choosenColor != ""){
-    //-----envoi des choix au localStorage
-    commande.push(KanapOptions);
-    localStorage.setItem("commande", JSON.stringify(commande));
-    messageConf1();
-    }else if(commande && choosenQuantity > 1 && choosenColor != null){
-    //-----envoi des choix au localStorage
-    commande.push(KanapOptions);
-    localStorage.setItem("commande", JSON.stringify(commande));
-    messageConf();
-  }
+    }else if(choosenQuantity >= 1 && choosenColor != ""){
 
+       if(choosenQuantity == 1){
+        messageConf1();
+      }
+      else{
+        messageConf()
+      }
+    }
+    else{
+      alert("Ooops, il s'est passé quelquechose de bizarre")
+    }
     
-  });
-
-  console.log(commande);
-
 }
-
-
-

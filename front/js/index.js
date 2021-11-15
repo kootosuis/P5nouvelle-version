@@ -32,10 +32,7 @@ function displayArticles() {
   cloneElt.getElementById("img").src = article.imageUrl;
   cloneElt.getElementById("img").alt = article.altTxt;
   cloneElt.getElementById("name").textContent = article.name;
-  // cloneElt.getElementById("card__info__price").textContent =
-  //   article.price / ",00 €";
-  cloneElt.getElementById("description").textContent =
-    article.description;
+  cloneElt.getElementById("description").textContent = article.description;
   cloneElt.getElementById("link").href += `?id=${article._id}`;
 
   document.getElementById("items").appendChild(cloneElt);

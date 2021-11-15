@@ -12,6 +12,11 @@ h2 {
 	text-align: start;
 }
 
+#name {
+	margin-top : 0;
+	margin-bottom: 20px;
+}
+
 /************/
 /*Cart Items*/
 /************/
@@ -33,7 +38,7 @@ h2 {
 	width: 50%;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	/* justify-content: space-between; */
 }
 .cart__item__content__titlePrice {
 	display: flex;
@@ -60,18 +65,41 @@ h2 {
 }
 .cart__item__content__settings__quantity {
 	display: flex;
+	margin-bottom : 20px;
 }
 .cart__item__content__settings__quantity p {
 	margin-right: 10px;
 	display: flex;
 }
-.cart__item__content__settings__delete p {
-	display: inline;
+.cart__item__content__settings__delete{
+	display : inline-block;
+	
 }
-.cart__item__content__settings__delete p:hover {
+
+.deleteItem {
+	/* display: inline; */
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
 	cursor: pointer;
-	font-weight: 700;
+	outline: inherit;
+	text-decoration: underline;
+	border-radius:5px;
+	padding: 10px;
+	position: relative;
+	left: -10px;
+	transition-duration: 0.4s;
 }
+.deleteItem:hover {
+	cursor: pointer;
+	text-decoration: none;
+	background-color: darkblue; /* Green */
+	color: white;
+	/* font-weight: 700; */
+}
+
 
 /*******/
 /*Price*/
