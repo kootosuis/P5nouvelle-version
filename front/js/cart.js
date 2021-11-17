@@ -126,86 +126,133 @@ for (i=0; i < articleBtn.length; i++){
 }
 
 //----------------------- Regex Checks -------------------------// 
-let regexTexte = (value) => {
-     console.log(value)
+let regexText = (value) => {
+     console.log("rgt" + value)
+     // https://regex101.com/r/gY7rO4/14
+     console.log(/^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$/.test(value))
      return /^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$/.test(value);
-     };
- let regexAdresse = (value) =>{
-     return /^[0-9]\ ([A-Za-z]*)$/.test(value);
- };
- let regexZip = (value) =>{
-      return /^[0-9]{,5}/.test(value);
-  };
- let regexEmail = (value) =>{
- //     return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]{2,}\.[a-z]{2,4}$/.test(value);
-       return /^[a-zA-Z0-9+._-]+@[a-zA-Z0-9._-]+\.([a-zA-Z0-9_-]+){2,4}$/.test(value);
- };
+};
+let regexAddress = (value) =>{
+     console.log("rga" + value)
+ // Cette regex accepte minimum de trois caractères 
+ // et il n'y a pas de limite max de caractères. 
+ //L'input peut inclure a-z, A-Z, des alphabets, des espaces, des virgules(,),
+ // point(.), apostrophe ( ' ) et le tiret(-) des symboles.
+ console.log(/^[a-zA-Z0-9À-ÿ\s,.'-]{3,}$/.test(value))
+     return /^[a-zA-Z0-9À-ÿ\s,.'-]{3,}$/.test(value);
+};
+let regexZip = (value) =>{
+     console.log("rgZ" + value)
+ //    Code postal au format 31 100 ou 31100
+      return /^([A-Z]+[A-Z]?\-)?[0-9]{1,2} ?[0-9]{3}$/.test(value);
+};
+let regexEmail = (value) =>{
+     console.log("rgE" + value)
+ //    Adresse e-mail au format contact@montrezvous.net
+       return /^[A-Za-z0-9](([_\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([_\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$/.test(value);
+};
  
- //----------------------- Regex Checks : first name -------------------------// 
- function firstNameCheck (contact) {
-      let firstName = contact.firstName;
-      if (regexTexte(firstName)) {
-      document.getElementById("firstNameErrorMsg").textContent= ""
-      return true;
-      }else{
-      document.getElementById("firstNameErrorMsg").textContent= "Veuillez un prénom";
-      return false;
-      }
- };
- //----------------------- Regex Checks : last name -------------------------// 
- function lastNameCheck (contact) {
-      let lastName = contact.lastName;
-      if (regexTexte(lastName)) {
-      document.getElementById("lastNameErrorMsg").textContent= ""
-      return true;
-      }else{
-      document.getElementById("lastNameErrorMsg").textContent= "Veuillez renseigner un nom de famille"
-      return false;
-      }
- };  
- //----------------------- Regex Checks : adress -------------------------// 
- function adressCheck (contact) {
-     let address = contact.address;
- if (regexAdresse(address)) {
-     document.getElementById("addressErrorMsg").textContent= ""
-     return true;
- }else{
-     document.getElementById("addressErrorMsg").textContent= "Veuillez renseigner un numéro de voie"
-     return false;
- }
- };
- //----------------------- Regex Checks : zip -------------------------// 
- function zipCheck (contact) {
-      let zip = contact.zip;
-  if (regexZip(zip)) {
-      document.getElementById("zipErrorMsg").textContent= ""
-      return true;
-  }else{
-      document.getElementById("zipErrorMsg").textContent= "Veuillez renseigner un numéro de code postal"
-      return false;
-  }
+//---------------- Validation et envoi formulaire au LocalStorage -------------------//
+
+var contact = "";
+let orderBtn = document.querySelector('#order');
+
+function check() {
+      
+     if( document.getElementById("firstName").value == "" ) {
+          document.getElementById("firstNameErrorMsg").textContent = "Veuillez renseigner un prénom";
+          // document.getElementById("firstName").focus() ;
+          return false;
+     }
+     if( regexText(document.getElementById("firstName").value) == false) {
+          document.getElementById("firstNameErrorMsg").textContent = "Veuillez corriger le champ, sans chiffres ni caractères spéciaux";
+          // document.getElementById("firstName").focus() ;
+          return false;
+     }
+     if( document.getElementById("lastName").value == "" ) {
+          document.getElementById("lastNameErrorMsg").textContent = "Veuillez renseigner un nom";
+          // document.getElementById("lastName").focus() ;
+          return false;
+     }
+     if( regexText(document.getElementById("lastName").value) == false) {
+          document.getElementById("lastNameErrorMsg").textContent = "Veuillez renseigner un nom valide, sans chiffres ni caractères spéciaux";
+          // document.getElementById("lastName").focus() ;
+          return false;
+     }
+     if( document.getElementById("address").value == "" ) {
+          document.getElementById("addressErrorMsg").textContent = "Veuillez renseigner une adresse";
+          // alert( "Veuillez renseigner une adresse" );
+          // document.getElementById("address").focus() ;
+          return false;
+     }
+     if( regexAddress(document.getElementById("address").value) == false) {
+          document.getElementById("addressErrorMsg").textContent = "Veuillez renseigner une adresse valide";
+          // alert( "Veuillez renseigner une adresse valide" );
+          // document.getElementById("address").focus() ;
+          return false;
+     }
+     if( document.getElementById("zip").value == "" ) {
+          document.getElementById("zipErrorMsg").textContent = "Veuillez renseigner un code postal";
+          // alert( "Veuillez renseigner un code postal" );
+          // document.getElementById("zip").focus() ;
+          return false;
+     }
+     if( regexZip(document.getElementById("zip").value) == false) {
+          document.getElementById("zipErrorMsg").textContent = "Veuillez renseigner un code postal valide";
+          // alert( "Veuillez renseigner un code postal valide" );
+          // document.getElementById("zip").focus() ;
+          return false;
+     }
+     if( document.getElementById("city").value == "" ) {
+          document.getElementById("cityErrorMsg").textContent = "Veuillez renseigner un nom de ville";
+          // alert( "Veuillez renseigner un nom de ville" );
+          // document.getElementById("city").focus() ;
+          return false;
+     }
+     if( regexText(document.getElementById("city").value) == false) {
+          document.getElementById("cityErrorMsg").textContent = "Veuillez renseigner un nom de ville valide";
+          // alert( "Veuillez renseigner un nom de ville valide" );
+           document.getElementById("city").focus() ;
+          return false;
+     }
+     if( document.getElementById("email").value == "" ) {
+          document.getElementById("emailErrorMsg").textContent = "Veuillez renseigner un email";
+          // alert( "Veuillez renseigner un email" );
+          document.getElementById("email").focus() ;
+          return false;
+     }
+     if( regexEmail(document.getElementById("email").value) == false) {
+          document.getElementById("emailErrorMsg").textContent = "Veuillez renseigner un email valide";
+          // alert( "Veuillez renseigner un email valide" );
+          document.getElementById("email").focus() ;
+          return false;
+     }
+     return( true );
+}
+
+
+orderBtn.onclick = (event) => {
+     //---------- Pour ne pas réactualiser la page ---------//
+     event.preventDefault();
+     
+     if (check()){
+     contact = {
+          firstName : document.getElementById("firstName").value.toUpperCase(),
+          lastName : document.getElementById("lastName").value.toUpperCase(),
+          address : document.getElementById("address").value.toUpperCase(),
+          city : document.getElementById("zip").value + ' ' + document.getElementById("city").value.toUpperCase(),
+          email : document.getElementById("email").value   
+     };}else{
+          alert("Veuillez compléter le formulaire")
+     }
+     console.log(contact)
+
+     var sumup = {
+          cart,
+          contact,
+          totalQuantity,
+          totalPrice
   };
- //----------------------- Regex Checks : city -------------------------// 
- function cityCheck (contact) {
-      let city = contact.city;
-      if (regexPrenomNomVille(city)) {    
-      document.getElementById("cityErrorMsg").textContent= ""
-      return true;
-      }else{
-      document.getElementById("cityErrorMsg").textContent= "Veuillez renseigner un nom de ville"
-      return false;
-      }
- };
- //----------------------- Regex Checks : email -------------------------// 
- function emailCheck (contact) {
-     let email = contact.email;
- if (regexEmail(email)) {
-     document.getElementById("emailErrorMsg").textContent= ""
-     return true;
- }else{
-     document.getElementById("emailErrorMsg").textContent= "Veuillez renseigner un email valide"
-     return false;
- }  
- };
-
-
+  
+  console.log(sumup);
+}
