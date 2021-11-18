@@ -21,7 +21,7 @@ function displayLines(line) {
     const templateElt = document.getElementById("templateLine");
     const cloneElt = document.importNode(templateElt.content, true);
 
-    cloneElt.getElementById("data").dataset.id = line.recup_Id;
+    cloneElt.getElementById("data").dataset.id = line.product_Id;
     cloneElt.getElementById("data").dataset.color = line.color;
     cloneElt.getElementById("data").dataset.index = i;
     cloneElt.getElementById("img").src = line.image;
@@ -81,12 +81,18 @@ document.getElementById("totalPrice").textContent  =  totalPrice + ",00 €";
 
 var input = document.querySelectorAll('.itemQuantity');
 
+function upDate (){
+     localStorage.setItem("commande", JSON.stringify(cart));
+     window.location.href = "cart.html"  
+}
 
 for (j = 0; j < input.length; j++){
      let k = cart.indexOf(cart[j]);
      let lineTochange = cart[j];
+     console.log
 
-     input[j].onchange = (e) =>{
+     input[j].oninput = (e) =>{
+          
 
           let newQuantity = parseInt(e.target.value);
           cart[k] = {
@@ -96,14 +102,48 @@ for (j = 0; j < input.length; j++){
                name: lineTochange.name,
                price: lineTochange.price,
                quantity: newQuantity,
-               recup_Id: lineTochange.recup_Id,   
+               productId: lineTochange.productId,   
           };
-
-     localStorage.setItem("commande", JSON.stringify(cart));
-     window.location.href = "cart.html"        
+     //------------ ça fait encore un flash   
+     setTimeout(upDate,3000);     
      }
 }
 
+
+//------------- creation d'un array pour l'envoi au serveur -------------//
+let products = []
+for (h = 0; h < cart.length; h++){
+     products.push(cart[h].productId)
+}
+// console.log(products)
+
+
+
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ça ne marche pas XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// for (j = 0; j < input.length; j++){
+//      let k = cart.indexOf(cart[j]);
+//      let lineTochange = cart[j];
+//      input[j].onchange = (e) =>{
+//           let newQuantity = parseInt(e.target.value);
+//           console.log("testorange")
+// 		  setTimeout(changeQuantitiesWithDelay (cart, k, lineTochange, newQuantity), 3000);   
+//      }
+// }
+// function changeQuantitiesWithDelay (cart, index, lineTochange, newQuantity){
+// 	 cart[index] = {
+//                alt: lineTochange.alt,
+//                color: lineTochange.color,
+//                image:lineTochange.image,
+//                name: lineTochange.name,
+//                price: lineTochange.price,
+//                quantity: newQuantity,
+//                productId: lineTochange.productId,   
+//           };
+
+//      localStorage.setItem("commande", JSON.stringify(cart));
+//      window.location.href = "cart.html"        
+//      }
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 //-------------- function delete ------------------------//
 
@@ -125,7 +165,7 @@ for (i=0; i < articleBtn.length; i++){
 }
 }
 
-//----------------------- Regex Checks -------------------------// 
+// //----------------------- Regex Checks -------------------------// 
 let regexText = (value) => {
      console.log("rgt" + value)
      // https://regex101.com/r/gY7rO4/14
@@ -152,10 +192,11 @@ let regexEmail = (value) =>{
        return /^[A-Za-z0-9](([_\.\-]?[a-zA-Z0-9]+)*)@([A-Za-z0-9]+)(([_\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$/.test(value);
 };
  
-//---------------- Validation et envoi formulaire au LocalStorage -------------------//
+// //---------------- Validation et envoi formulaire au LocalStorage -------------------//
 
 var contact = "";
 let orderBtn = document.querySelector('#order');
+
 
 function check() {
       
@@ -230,11 +271,11 @@ function check() {
      return( true );
 }
 
-
 orderBtn.onclick = (event) => {
      //---------- Pour ne pas réactualiser la page ---------//
      event.preventDefault();
      
+     //------------ on vérifie que tout est ok et on crée un objet contact------//
      if (check()){
      contact = {
           firstName : document.getElementById("firstName").value.toUpperCase(),
@@ -245,14 +286,40 @@ orderBtn.onclick = (event) => {
      };}else{
           alert("Veuillez compléter le formulaire")
      }
-     console.log(contact)
 
+     //---------- on résume la commande ----------------//
      var sumup = {
-          cart,
           contact,
-          totalQuantity,
-          totalPrice
-  };
+          products
+     };
   
-  console.log(sumup);
+     //   console.log(sumup);
+     //   console.log(JSON.stringify(contact));
+
+     //----------- et on l'envoie au serveur-------------//
+     fetch("http://localhost:3000/api/products/order", {
+        method: 'POST',
+        body: JSON.stringify(sumup),
+        headers: {
+            "Content-Type": "application/json",
+            },
+            mode:'cors',
+     })
+     .then(response => {
+        return response.json();
+     })
+     .then(response => {
+        console.log(response)
+     //    localStorage.setItem('contact', JSON.stringify(response.contact));
+        sessionStorage.setItem('orderId', JSON.stringify(response.orderId));
+        sessionStorage.setItem('total', JSON.stringify(totalPrice));
+        localStorage.removeItem('commande')
+        window.location.href= "confirmation.html?orderId="+response.orderId
+    })
+    .catch(error => {
+        console.log(error);
+     });
+
 }
+
+
