@@ -47,34 +47,22 @@ function fillArticle(article) {
     // step 4 : push the option to the select
     document.getElementById("colors").add(option);
   });
-  return article;
 }
-
-
-
 
 
 //------------------ Add to cart -----------------//
 
 document.getElementById("addToCart").onclick = (event) => {
     //Pour ne pas réactualiser la page
-    event.preventDefault();
+    // event.preventDefault();
 
-    //--------- definition des variables en fonctions des choix faits par l'utilisateur -----//
+    // //--------- definition des variables en fonctions des choix faits par l'utilisateur -----//
     let colors = document.getElementById("colors");
     let choosenColor = colors.options[colors.selectedIndex].value;
-    // console.log("couleur choisie " + choosenColor);
+    console.log("couleur choisie " + choosenColor);
     let choosenQuantity = parseInt(document.getElementById("quantity").value);
-    // console.log("quantité " + choosenQuantity);
-    let KanapOptions = {
-      image: article.imageUrl,
-      alt: article.altTxt,
-      name: article.name,
-      productId: article._id,
-      color: choosenColor,
-      quantity: choosenQuantity,
-      price: article.price,
-    };
+    console.log("quantité " + choosenQuantity);
+   
 
     //----------- pop up de confirmation (ou pas) pour plusieurs exemplaires -------------//
     confirmation = () => {
@@ -110,17 +98,14 @@ document.getElementById("addToCart").onclick = (event) => {
     //----------- message alerte si pas couleur et/ou quantité      -------------//
     messageColor = () => {
       window.confirm(`Veuillez choisir une couleur`);
-      preventDefault();
       // window.location.href = `product.html?id=${articleId}`;
     };
     messageQuantity = () => {
       window.confirm(`Veuillez choisir une quantité`);
-      preventDefault();
       // window.location.href = `product.html?id=${articleId}`;
     };
     messageCetQ = () => {
       window.confirm(`Veuillez choisir une couleur et une quantité`);
-      preventDefault();
       // window.location.href = `product.html?id=${articleId}`;
     };
 
@@ -128,13 +113,14 @@ document.getElementById("addToCart").onclick = (event) => {
     //------- LS = LocalStorage
 
     sendToCart = () => {
+      
       let commandeLS = JSON.parse(localStorage.getItem("commande"));
       //--------- stockage des choix -----//
-      let colors = document.getElementById("colors");
-      let choosenColor = colors.options[colors.selectedIndex].value;
-      // console.log("couleur choisie " + choosenColor);
-      let choosenQuantity = parseInt(document.getElementById("quantity").value);
-      // console.log("quantité " + choosenQuantity);
+      // let colors = document.getElementById("colors");
+      // let choosenColor = colors.options[colors.selectedIndex].value;
+      // // console.log("couleur choisie " + choosenColor);
+      // let choosenQuantity = parseInt(document.getElementById("quantity").value);
+      // // console.log("quantité " + choosenQuantity);
       let KanapOptions = {
         image: article.imageUrl,
         alt: article.altTxt,
@@ -146,40 +132,37 @@ document.getElementById("addToCart").onclick = (event) => {
       };
       // console.log(KanapOptions);
 
+
       //------ things already in the localStorage ----------------//
-      if (commandeLS) {
 
-          for (t = 0; t < commandeLS.length; t++){
-              let s = commandeLS.indexOf(commandeLS[t]);
-              let newQuantity = commandeLS[s].quantity + KanapOptions.quantity
-              
+      if (commandeLS){
 
-              // verifier qu'une ligne (ayant le même name et la même couleur) existe et additionner les quantités:
-              if(commandeLS[t].productId === KanapOptions.productId && commandeLS[t].color === KanapOptions.color){       
-                commandeLS[s] = {
-                  image: KanapOptions.image,
-                  alt: KanapOptions.altTxt,
-                  name: KanapOptions.name,
-                  productId: KanapOptions.productId,
-                  color: choosenColor,
-                  quantity: newQuantity,
-                  price: article.price,
-                };
-                break;    
-              // si non (créer une nouvelle ligne):
-              }else{
-              commandeLS.push(KanapOptions);
-              console.log("ok2")
+          const isPresent = (elt) => elt.productId == KanapOptions.productId && elt.color == KanapOptions.color;
+          let t = commandeLS.findIndex(isPresent);
+          
+          if (t != -1){
+              let newQuantity = commandeLS[t].quantity + choosenQuantity;
+              commandeLS[t] =  {
+                image: article.imageUrl,
+                alt: article.altTxt,
+                name: article.name,
+                productId: article._id,
+                color: choosenColor,
+                quantity: newQuantity,
+                price: article.price
               }
+          }else{
+              commandeLS.push(KanapOptions);
           }
-
       //------ things not yet in the localStorage ----------------//
-      } else {
+
+      }else if(commandeLS = false){
         commandeLS = [];
         commandeLS.push(KanapOptions);
       }
       localStorage.setItem("commande", JSON.stringify(commandeLS));
-      // window.location.href = "cart.html";
+      console.log(commandeLS)
+      window.location.href = "cart.html";
     }
 
     //------------ procédure de confirmation (ou pas)           ----------------//
