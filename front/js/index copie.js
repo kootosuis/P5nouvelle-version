@@ -1,8 +1,8 @@
 //----------- main function -------------// 
 (async () => {
-  const canapes = await getArticles();
-  for (canape of canapes) {
-    displayArticles(canape);
+  const articles = await getArticles();
+  for (article of articles) {
+    displayArticles(article);
   }
 })();
 
@@ -14,10 +14,10 @@ function getArticles() {
       console.log(response);
       return response.json();
     })
-    .then(function (responseJson) {
-      console.log("article :" +responseJson);
-      console.log(responseJson);
-      return responseJson;
+    .then(function (articles) {
+      console.log("article :" + articles);
+      console.log(articles);
+      return articles;
     })
     .catch(function (error) {
       alert(error);
@@ -25,15 +25,15 @@ function getArticles() {
 }
 
 //---- subfunction : second, display the articles : methode template -----//
-function displayArticles(canape) {
+function displayArticles() {
   const templateElt = document.getElementById("templateArticle");
   const cloneElt = document.importNode(templateElt.content, true);
 
-  cloneElt.getElementById("img").src = canape.imageUrl;
-  cloneElt.getElementById("img").alt = canape.altTxt;
-  cloneElt.getElementById("name").textContent = canape.name;
-  cloneElt.getElementById("description").textContent = canape.description;
-  cloneElt.getElementById("link").href += `?id=${canape._id}`;
+  cloneElt.getElementById("img").src = article.imageUrl;
+  cloneElt.getElementById("img").alt = article.altTxt;
+  cloneElt.getElementById("name").textContent = article.name;
+  cloneElt.getElementById("description").textContent = article.description;
+  cloneElt.getElementById("link").href += `?id=${article._id}`;
 
   document.getElementById("items").appendChild(cloneElt);
 }
