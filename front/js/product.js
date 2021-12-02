@@ -1,4 +1,4 @@
-//-------------- déclaration des variables ------------------//
+//-------------- declarations------------------//
 var canapeId = null;
 var canape = null;
 
@@ -56,26 +56,23 @@ function fillCanape(canape) {
   });
 }
 
-//----------- message alerte si pas couleur et/ou quantité      -------------//
+//----------- please choose a color and a quantity     -------------//
 function messageColor() {
   window.confirm(`Veuillez choisir une couleur`);
-  // window.location.href = `product.html?id=${canapeId}`;
 }
 function messageQuantity() {
   window.confirm(`Veuillez choisir une quantité`);
-  // window.location.href = `product.html?id=${canapeId}`;
 }
 function messageCetQ() {
   window.confirm(`Veuillez choisir une couleur et une quantité`);
-  // window.location.href = `product.html?id=${canapeId}`;
 }
 
-//----------- variables de stockage---------------//
 //----------- LS = LocalStorage ------------------//
+//----------- confirm, check and add to cart ----------------------------------------------------//
 
 var commandeLS = JSON.parse(localStorage.getItem("commande"));
 
-function sendToCart(canape, commandeLS, choosenColor, choosenQuantity) {
+function sendToLS(canape, commandeLS, choosenColor, choosenQuantity) {
   var KanapOptions = {
     image: canape.imageUrl,
     alt: canape.altTxt,
@@ -118,17 +115,15 @@ function sendToCart(canape, commandeLS, choosenColor, choosenQuantity) {
   window.location.href = "cart.html";
 }
 
-//----------- pop up de confirmation (ou pas) pour plusieurs exemplaires -------------//
-//----------- et  envoi au panier-----------------------------------------------------//
 function confirmation(message) {
   if (window.confirm(message)) {
-    sendToCart(canape, commandeLS, choosenColor, choosenQuantity);
+    sendToLS(canape, commandeLS, choosenColor, choosenQuantity);
   } else {
     window.location.href = `index.html`;
   }
 }
 
-function checkAndSend(canape, choosenQuantity, choosenColor) {
+function checkAndAddToCart(canape, choosenQuantity, choosenColor) {
   if (choosenQuantity == 0 && choosenColor == "") {
     messageCetQ();
   } else if (choosenQuantity != 0 && choosenColor == "") {
@@ -150,13 +145,11 @@ function checkAndSend(canape, choosenQuantity, choosenColor) {
   }
 }
 
-//------------------ Add to cart -----------------//
-
 document.getElementById("addToCart").onclick = (event) => {
   choosenColor = colors.options[colors.selectedIndex].value;
   choosenQuantity = parseInt(document.getElementById("quantity").value);
   //Pour ne pas réactualiser la page
   event.preventDefault();
   console.log("test1");
-  checkAndSend(canape, choosenQuantity, choosenColor);
+  checkAndAddToCart(canape, choosenQuantity, choosenColor);
 };

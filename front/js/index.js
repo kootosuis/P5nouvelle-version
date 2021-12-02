@@ -1,22 +1,18 @@
 //----------- main function -------------// 
 (async () => {
-  const canapes = await getArticles();
+  const canapes = await getCatalogue();
   for (canape of canapes) {
-    displayArticles(canape);
+    displayCatalogue(canape);
   }
 })();
 
 //---- subfunction : first, get the articles-----//
-function getArticles() {
+function getCatalogue() {
   return fetch("http://localhost:3000/api/products")
     .then(function (response) {
-      console.log("response :" + response);
-      console.log(response);
       return response.json();
     })
     .then(function (responseJson) {
-      console.log("article :" +responseJson);
-      console.log(responseJson);
       return responseJson;
     })
     .catch(function (error) {
@@ -25,7 +21,7 @@ function getArticles() {
 }
 
 //---- subfunction : second, display the articles : methode template -----//
-function displayArticles(canape) {
+function displayCatalogue(canape) {
   const templateElt = document.getElementById("templateArticle");
   const cloneElt = document.importNode(templateElt.content, true);
 
@@ -38,33 +34,17 @@ function displayArticles(canape) {
   document.getElementById("items").appendChild(cloneElt);
 }
 
-//------------------variante non explorée : methode innerHTML --------------//
-// function displayArticles (){
-//     document.getElementById("products").innerHTML += `
-//     <article class="product">
-//                         <a href="http://localhost:3000/api/furniture.${article.id}">
-//                             <div class="card">
-
-//                                 <div class="card__image">
-//                                     <div class="card__image__img">
-//                                             <img
-//                                             src="${article.imageUrl}"
-//                                             alt="description de la photo"/>
-//                                     </div>
-//                                 </div>
-
-//                                 <div class="card__info">
-//                                     <h3 class="card__info__name">${article.name}</h3>
-//                                     <div class="card__info__price">${article.price}</div>
-//                                     <div class="card__info__stars">
-//                                             <img class="icon card__info--starng" src="icons/star-regular.svg" alt="icon">
-//                                             <img class="icon card__info--starok" src="icons/star-solid.svg" alt="icon">
-//                                     </div>
-//                                     <div class="card__info__description">
-//                                             <p>${article.description}</p>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </a>
-//     </article>`
+//------------------ innerHTML method --------------//
+// function displayArticles (canape){
+//     document.getElementById("items").innerHTML += `
+    
+//       <a id="link" href="product.html?id=${canape._id}">
+//         <article>
+//             <img src="${canape.imageUrl}"
+//                  alt="${canape.altTxT}"/>
+//             <h3 id="name" class="productName">${canape.name}</h3>
+//             <p>${canape.price},00 €</p>
+//             <p id="description" class="productDescription">${canape.description}</p>
+//         </article>
+//       </a>`
 // }
