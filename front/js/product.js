@@ -30,9 +30,6 @@ function getCanape(canapeId) {
       alert(error);
     });
 }
-// question : quelle autre méthode ?
-// mettre dans le session storage
-// ou dans un autre storage?
 
 //---- subfunction : finally, hydrate the article's html ------------//
 function fillCanape(canape) {
@@ -111,7 +108,6 @@ function sendToLS(canape, commandeLS, choosenColor, choosenQuantity) {
   //-----   envoi des choix au localStorage
 
   localStorage.setItem("commande", JSON.stringify(commandeLS));
-  console.log(commandeLS);
   window.location.href = "cart.html";
 }
 
@@ -150,6 +146,5 @@ document.getElementById("addToCart").onclick = (event) => {
   choosenQuantity = parseInt(document.getElementById("quantity").value);
   //Pour ne pas réactualiser la page
   event.preventDefault();
-  console.log("test1");
   checkAndAddToCart(canape, choosenQuantity, choosenColor);
 };
