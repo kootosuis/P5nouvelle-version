@@ -35,7 +35,7 @@ function displayCatalogue(canape) {
 }
 
 //------------------ innerHTML method --------------//
-// function displayArticles (canape){
+// function displayCatalogue (canape){
 //     document.getElementById("items").innerHTML += `
     
 //       <a id="link" href="product.html?id=${canape._id}">
